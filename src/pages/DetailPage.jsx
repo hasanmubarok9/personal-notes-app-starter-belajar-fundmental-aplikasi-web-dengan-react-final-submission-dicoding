@@ -1,52 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiDownload, FiUpload, FiTrash } from 'react-icons/fi';
-import { getNote } from '../utils/local-data';
 import { showFormattedDate } from '../utils';
-import { archiveNote, unarchiveNote, deleteNote } from '../utils/local-data';
+import { archiveNote, getNote, unarchiveNote, deleteNote } from '../utils/network-data';
 
-function DetailPageWrapper() {
+function DetailPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  return <DetailPage id={id} navigate={navigate}/>
-}
 
-class DetailPage extends React.Component {
-  constructor(props) {
-    super(props);
+  const [note, setNote] = useState(null);
 
-    this.state = {
-      note: getNote(props.id)
+  useEffect(() => {
+    const fetchNote = async () => {
+      const { data } = await getNote(id);
+      setNote(data);
     }
+    fetchNote();
+  }, []);
 
-    this.onClickActionHandler = this.onClickActionHandler.bind(this);
-    this.onDeleteNoteHandler = this.onDeleteNoteHandler.bind(this);
-  }
-
-  onClickActionHandler() {
-    if (this.state.note.archived) {
-      unarchiveNote(this.props.id);
+  function onClickActionHandler() {
+    if (note.archived) {
+      unarchiveNote(id)
     } else {
-      archiveNote(this.props.id);
+      archiveNote(id);
     }
-    this.props.navigate('/');
+    navigate('/');
   }
 
-  onDeleteNoteHandler() {
-    deleteNote(this.props.id);
-    this.props.navigate('/');
+  function onDeleteNoteHandler() {
+    deleteNote(id);
+    navigate('/');
   }
 
-  render() {
-    const {
-      id,
-      title,
-      body,
-      createdAt,
-      archived
-    } = this.state.note;
-    const formattedCreatedAt = showFormattedDate(createdAt);
+  if (note === undefined) {
+    return <p>Note not found</p>
+  }
+  if (note === null) {
     return (
+      <p>Loading...</p>
+    )
+  }
+
+  const {title, body, createdAt, archived} = note;
+  const formattedCreatedAt = showFormattedDate(createdAt);
+
+  return (
       <section className="detail-page">
         <h3 className="detail-page__title">{title}</h3>
         <p>{formattedCreatedAt}</p>
@@ -54,7 +52,7 @@ class DetailPage extends React.Component {
           {body}
         </div>
         <div className="detail-page__action">
-          <button className="action" type="button" title={archived ? "Aktifkan" : "Arsipkan"} onClick={this.onClickActionHandler}>
+          <button className="action" type="button" title={archived ? "Aktifkan" : "Arsipkan"} onClick={onClickActionHandler}>
             {
               archived ? (
                 <FiUpload />
@@ -63,13 +61,12 @@ class DetailPage extends React.Component {
               )
             }
           </button>
-          <button className="action" type="button" title="Hapus" onClick={this.onDeleteNoteHandler}>
+          <button className="action" type="button" title="Hapus" onClick={onDeleteNoteHandler}>
             <FiTrash />
           </button>
         </div>
       </section>
-    )
-  }
+  );
 }
 
-export default DetailPageWrapper;
+export default DetailPage;
