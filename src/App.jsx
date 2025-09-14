@@ -67,8 +67,6 @@ function App() {
       </header>
       <main>
         <Routes>
-          <Route path="/login" element={<LoginPage /> } />
-          <Route path="/register" element={<RegisterPage /> } />
           <Route path="/" element={<HomePage /> } />
           <Route path="/archives" element={<ArchivesPage /> } />
           <Route path="/notes/:id" element={<DetailPage /> } />

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import LoginInput from '../components/LoginInput';
 import { login } from '../utils/network-data';
 
-function LoginPage() {
+function LoginPage({ loginSuccess }) {
   async function onLogin({ email, password }) {
     const { error, data } = await login({ email, password });
 

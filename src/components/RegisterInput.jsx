@@ -9,15 +9,15 @@ function RegisterInput({
   const [password, setPassword] = useState('');
 
   const onNameChangeHandler = (event) => {
-    setState(event.target.value);
+    setName(event.target.value);
   }
 
   const onEmailChangeHandler = (event) => {
-    setState(event.target.value);
+    setEmail(event.target.value);
   }
 
   const onPasswordChangeHandler = (event) => {
-    setState(event.target.value);
+    setPassword(event.target.value);
   }
 
   const onSubmitHandler = (event) => {

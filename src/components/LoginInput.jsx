@@ -17,7 +17,7 @@ function LoginInput({
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    login({ emai, password });
+    login({ email, password });
   };
 
   return (
