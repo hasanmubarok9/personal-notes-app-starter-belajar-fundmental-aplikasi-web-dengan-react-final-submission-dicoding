@@ -3,12 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
 import SearchBar from '../components/SearchBar';
 import NoteList from '../components/NoteList';
-import { getActiveNotes } from '../utils/local-data';
+import { getActiveNotes } from '../utils/network-data';
 
 function HomePage({ defaultKeyword, kewyrod }) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [notes, setNotes] = useState(getActiveNotes());
+  const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState(searchParams.get('keyword') ?? '');
 
   const filteredNotes = useMemo(() => {
@@ -16,6 +16,16 @@ function HomePage({ defaultKeyword, kewyrod }) {
     if (!k) return notes;
     return notes.filter(note => note.title.toLowerCase().includes(k));
   }, [notes, keyword]);
+
+  useEffect(() => {
+    const fetchActiveNotes = async () => {
+      const { data } = await getActiveNotes();
+      setNotes(data)
+    }
+    fetchActiveNotes();
+  }, [])
+
+  console.log("nilai filteredNotes: ", filteredNotes);
 
   function onKeywordChangeHandler(newKeyword) {
     setKeyword(newKeyword);
