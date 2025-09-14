@@ -13,10 +13,18 @@
 
 [data-theme="light"] {
   --background: #dddddd;
-  --suface: #ffffff;
+  --surface: #ffffff;
   --on-background: #333333;
   --on-background-grey: #6d6d6d;
   --on-surface: #333333;
+}
+
+[data-theme="dark"] {
+  --background: #121212;
+  --surface: #121212;
+  --on-background: #eeeeee;
+  --on-background-grey: #c7c7c7;
+  --on-surface: #ffffff;
 }
 
 * {
@@ -304,4 +312,3 @@ main {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-
