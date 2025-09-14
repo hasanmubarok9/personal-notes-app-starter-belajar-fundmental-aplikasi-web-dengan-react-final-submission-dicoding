@@ -25,8 +25,6 @@ function HomePage({ defaultKeyword, kewyrod }) {
     fetchActiveNotes();
   }, [])
 
-  console.log("nilai filteredNotes: ", filteredNotes);
-
   function onKeywordChangeHandler(newKeyword) {
     setKeyword(newKeyword);
     setSearchParams({ keyword: newKeyword });
