@@ -1,65 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
 import SearchBar from '../components/SearchBar';
 import NoteList from '../components/NoteList';
 import { getActiveNotes } from '../utils/local-data';
 
-function HomePageWrapper() {
+function HomePage({ defaultKeyword, kewyrod }) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [notes, setNotes] = useState(getActiveNotes());
+  const [keyword, setKeyword] = useState(searchParams.get('keyword') ?? '');
 
-  const keyword = searchParams.get('keyword');
+  const filteredNotes = useMemo(() => {
+    const k = keyword.trim().toLowerCase();
+    if (!k) return notes;
+    return notes.filter(note => note.title.toLowerCase().includes(k));
+  }, [notes, keyword]);
 
-  function changeSearchParams(keyword) {
-    setSearchParams({ keyword });
+  function onKeywordChangeHandler(newKeyword) {
+    setKeyword(newKeyword);
+    setSearchParams({ keyword: newKeyword });
   }
 
-  return  <HomePage defaultKeyword={keyword} keywordChange={changeSearchParams} navigate={navigate} />
-}
-
-class HomePage extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      notes: getActiveNotes(),
-      keyword: props.defaultKeyword || ''
-    };
-
-    this.onKeywordChangeHandler = this.onKeywordChangeHandler.bind(this);
-    this.onAddNewNoteHandler = this.onAddNewNoteHandler.bind(this);
+  function onAddNewNoteHandler() {
+    navigate('/add');
   }
 
-  onKeywordChangeHandler(keyword) {
-    this.setState(() => {
-      return {
-        keyword
-      }
-    })
-
-    this.props.keywordChange(keyword);
-  }
-
-  onAddNewNoteHandler() {
-    this.props.navigate('/add');
-  }
-
-  render() {
-    const notes = this.state.notes.filter((note) => {
-      return note.title.toLowerCase().includes(
-        this.state.keyword.toLowerCase()
-      )
-    });
-
-    return (
+  return (
       <main>
         <section className="homepage">
           <h2>Catatan Aktif</h2>
-          <SearchBar keyword={this.state.keyword} keywordChange={this.onKeywordChangeHandler} />
+          <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
           {
-            notes.length ? (
-              <NoteList notes={notes} />
+            filteredNotes.length ? (
+              <NoteList notes={filteredNotes} />
             ) : (
               <section className="notes-list-empty">
                 <p className="notes-list__empty">Tidak ada catatan</p>
@@ -67,14 +41,15 @@ class HomePage extends React.Component {
             )
           }
           <div className="homepage__action">
-            <button className="action" type="button" title="Tambah" onClick={this.onAddNewNoteHandler}>
+            <button className="action" type="button" title="Tambah" onClick={onAddNewNoteHandler}>
             <FiPlus />
             </button>
           </div>
         </section>
       </main>
-    )
-  }
+  )
+  
 }
 
-export default HomePageWrapper;
+
+export default HomePage;
