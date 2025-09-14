@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Routes, Link } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import HomePage from './pages/HomePage';
@@ -8,8 +8,57 @@ import ArchivesPage from './pages/ArchivesPage';
 import DetailPage from './pages/DetailPage';
 import AddPage from './pages/AddPage';
 import NotFoundPage from './pages/NotFoundPage';
+import { getUserLogged, putAccessToken } from './utils/network-data';
 
 function App() {
+  const [authedUser, setAuthedUser] = useState(null);
+  const [initializing, setInitializing] = useState(true);
+
+  useEffect(() => {
+
+    async function fetchUserLogged() {
+
+      const { data } = await getUserLogged();
+      setAuthedUser(data);
+      setInitializing(false);
+    }
+
+    fetchUserLogged();
+
+  }, []);
+
+  const onLoginSuccess = async ({ accessToken }) => {
+    putAccessToken(accessToken);
+    const { data } = await getUserLogged();
+
+    setAuthedUser(data);
+  }
+
+  const onLogout = () => {
+    setAuthedUser(null);
+    putAccessToken('');
+  }
+
+  if (initializing) {
+    return null;
+  }
+
+  if (authedUser === null) {
+    return (
+      <div className="app-container">
+        <header>
+          <h1><Link to="/">Aplikasi Catatan</Link></h1>
+          <Navigation />
+        </header>
+        <main>
+          <Routes>
+            <Route path="/*" element={<LoginPage loginSuccess={onLoginSuccess} />}/>
+            <Route path="/register" element={<RegisterPage />} />
+          </Routes>
+        </main>
+      </div>
+    )
+  }
   return (
     <div className="app-container">
       <header>
