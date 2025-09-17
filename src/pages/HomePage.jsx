@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
+import LocaleContext from '../contexts/LocaleContext';
 import SearchBar from '../components/SearchBar';
 import NoteList from '../components/NoteList';
 import { getActiveNotes } from '../utils/network-data';
@@ -10,6 +11,7 @@ function HomePage({ defaultKeyword, kewyrod }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState(searchParams.get('keyword') ?? '');
+  const { locale } = useContext(LocaleContext);
 
   const filteredNotes = useMemo(() => {
     const k = keyword.trim().toLowerCase();
@@ -37,7 +39,7 @@ function HomePage({ defaultKeyword, kewyrod }) {
   return (
       <main>
         <section className="homepage">
-          <h2>Catatan Aktif</h2>
+          <h2>{ locale === 'id' ? 'Catatan Aktif' : 'Notes App' }</h2>
           <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
           {
             filteredNotes.length ? (
